@@ -1,4 +1,11 @@
-const app = document.getElementById("root");  
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+);
+
+const app = document.getElementById("root");
 
 app.innerHTML = `
   <main style="
@@ -41,20 +48,19 @@ app.innerHTML = `
       ">
         Continue with Google
       </button>
-
-      <p style="
-        margin-top:18px;
-        color:#7180a3;
-        font-size:12px;
-      ">
-        Google authentication will be connected through Supabase.
-      </p>
     </section>
   </main>
 `;
 
-document
-  .getElementById("googleLogin")
-  .addEventListener("click", () => {
-    alert("Google Login setup will be connected in the next step.");
+document.getElementById("googleLogin").addEventListener("click", async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: window.location.origin
+    }
   });
+
+  if (error) {
+    alert(error.message);
+  }
+});
