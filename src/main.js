@@ -1,4 +1,4 @@
-const app = document.getElementById("root");
+const app = document.getElementById("root"); 
 
 app.innerHTML = `
   <main style="
