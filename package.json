@@ -1,0 +1,15 @@
+{
+  "name": "giri-cyber-security-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.0",
+    "vite": "^7.1.7"
+  },
+  "devDependencies": {}
+}
