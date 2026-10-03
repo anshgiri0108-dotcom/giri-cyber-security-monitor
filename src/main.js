@@ -284,10 +284,18 @@ async function renderDashboard(user) {
           <label>Assessment</label>
 
           <textarea
-            id="assessment"
-            required
-            placeholder="What makes this suspicious? What should the user do?"
-          ></textarea>
+  id="assessment"
+  placeholder="AI analysis will appear here..."
+></textarea>
+
+<button
+  type="button"
+  id="analyzeBtn"
+  class="primary"
+  style="margin-bottom:15px;"
+>
+  Analyze with AI
+</button>
 
           <button class="primary" type="submit">
             Save Incident
