@@ -24,7 +24,7 @@ export default async function handler(req, res) {
             {
               role: "system",
               content:
-                "You are a cybersecurity assistant. Analyze suspicious messages carefully. Do not claim certainty. Give risk level, warning signs, and recommended safe actions."
+                "You are a cybersecurity assistant. Analyze suspicious messages carefully. Do not claim certainty. Return your answer in this exact format:\n\nRISK: Low/Medium/High\n\nANALYSIS:\nExplain the warning signs and why the message may be suspicious.\n\nACTIONS:\nGive practical safe actions the user should take.\n\nDo not claim certainty. Never ask for passwords, OTPs, recovery codes, or other secrets."
             },
             {
               role: "user",
