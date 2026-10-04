@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";  
+import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   import.meta.env.VITE_SUPABASE_URL,
@@ -8,125 +8,256 @@ const supabase = createClient(
 const app = document.getElementById("root");
 
 const styles = `
-* { box-sizing: border-box; }
-
-body {
-  margin: 0;
-  background: #0b1020;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-button {
-  cursor: pointer;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 24px;
-}
-
-.card {
-  background: #11182d;
-  border: 1px solid #263252;
-  border-radius: 18px;
-  padding: 22px;
-  margin-bottom: 20px;
-}
-
-input, textarea, select {
-  width: 100%;
-  padding: 12px;
-  margin-top: 7px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #0b1020;
-  color: white;
-  font-size: 15px;
-}
-
-textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-label {
-  color: #cbd5e1;
-  font-size: 14px;
-}
-
-.primary {
-  background: #2563eb;
-  color: white;
-  border: 0;
-  padding: 12px 18px;
-  border-radius: 10px;
-  font-weight: bold;
-}
-
-.danger {
-  background: #dc2626;
-  color: white;
-  border: 0;
-  padding: 10px 15px;
-  border-radius: 9px;
-}
-
-.incident {
-  border: 1px solid #263252;
-  border-radius: 14px;
-  padding: 17px;
-  margin-top: 12px;
-}
-
-.muted {
-  color: #9da9c9;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
-.stat {
-  background: #0b1020;
-  border: 1px solid #263252;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-@media (max-width: 600px) {
-  .stats {
-    grid-template-columns: 1fr;
+  * {
+    box-sizing: border-box;
   }
-}
+
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 25px 18px;
+  }
+
+  .login-box {
+    max-width: 430px;
+    margin: 100px auto;
+    background: white;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    text-align: center;
+  }
+
+  h1, h2, h3 {
+    margin-top: 0;
+  }
+
+  .brand {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .muted {
+    color: #687386;
+  }
+
+  button {
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .primary {
+    background: #172033;
+    color: white;
+  }
+
+  .primary:hover {
+    opacity: 0.9;
+  }
+
+  .primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .danger {
+    background: #fff0f0;
+    color: #c62828;
+  }
+
+  .success {
+    background: #eaf8ef;
+    color: #16803c;
+  }
+
+  .topbar {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .stat {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+  }
+
+  .stat-number {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin: 15px 0 7px;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d8dee9;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: inherit;
+  }
+
+  textarea {
+    min-height: 130px;
+    resize: vertical;
+  }
+
+  .incident {
+    border: 1px solid #e1e6ef;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 14px;
+  }
+
+  .incident-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: flex-start;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 5px;
+  }
+
+  .high {
+    background: #ffe5e5;
+    color: #c62828;
+  }
+
+  .medium {
+    background: #fff3d6;
+    color: #9a6500;
+  }
+
+  .low {
+    background: #e5f7eb;
+    color: #16733a;
+  }
+
+  .open {
+    background: #e8f0ff;
+    color: #2456a6;
+  }
+
+  .resolved {
+    background: #e8f7ed;
+    color: #18733b;
+  }
+
+  .incident-message {
+    background: #f7f9fc;
+    padding: 12px;
+    border-radius: 10px;
+    margin: 12px 0;
+    white-space: pre-wrap;
+  }
+
+  .assessment {
+    background: #f8faff;
+    border-left: 4px solid #172033;
+    padding: 12px;
+    white-space: pre-wrap;
+    margin-top: 12px;
+  }
+
+  .actions {
+    margin-top: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 700px) {
+    .stats {
+      grid-template-columns: 1fr;
+    }
+
+    .topbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .incident-head {
+      flex-direction: column;
+    }
+  }
 `;
+
+const styleTag = document.createElement("style");
+styleTag.textContent = styles;
+document.head.appendChild(styleTag);
+
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 
 function renderLogin() {
   app.innerHTML = `
-    <style>${styles}</style>
+    <div class="login-box">
+      <div class="brand">Giri Cyber Tech</div>
 
-    <main class="container" style="max-width:420px; padding-top:80px;">
-      <section class="card" style="text-align:center;">
+      <p class="muted">
+        AI-assisted cybersecurity incident monitoring
+      </p>
 
-        <div style="font-size:44px;">🛡️</div>
-
-        <h1>Giri Cyber Tech</h1>
-
-        <p class="muted">
-          AI-assisted cybersecurity monitoring
-        </p>
-
-        <button id="googleLogin" class="primary"
-          style="width:100%; margin-top:15px;">
-          Continue with Google
-        </button>
-
-      </section>
-    </main>
+      <button id="googleLogin" class="primary">
+        Continue with Google
+      </button>
+    </div>
   `;
 
   document
@@ -141,13 +272,13 @@ function renderLogin() {
       });
 
       if (error) {
-        alert(error.message);
+        alert("Login failed: " + error.message);
       }
     });
 }
 
-async function loadIncidents(userId) {
 
+async function loadIncidents(userId) {
   const { data, error } = await supabase
     .from("incidents")
     .select("*")
@@ -156,46 +287,35 @@ async function loadIncidents(userId) {
 
   if (error) {
     console.error(error);
-    alert("Could not load incidents: " + error.message);
     return [];
   }
 
   return data || [];
 }
 
+
 async function renderDashboard(user) {
 
   const incidents = await loadIncidents(user.id);
 
   const openCount =
-    incidents.filter(i => i.status === "open").length;
+    incidents.filter(item => item.status === "open").length;
 
   const resolvedCount =
-    incidents.filter(i => i.status === "resolved").length;
+    incidents.filter(item => item.status === "resolved").length;
 
   const highCount =
-    incidents.filter(i => i.risk === "High").length;
+    incidents.filter(item => item.risk === "High").length;
 
   app.innerHTML = `
-    <style>${styles}</style>
+    <div class="container">
 
-    <main class="container">
-
-      <header style="
-        display:flex;
-        justify-content:space-between;
-        align-items:center;
-        gap:15px;
-        margin-bottom:25px;
-      ">
+      <div class="topbar">
 
         <div>
-          <h1 style="margin-bottom:5px;">
-            🛡️ Giri Cyber Tech
-          </h1>
-
+          <div class="brand">Giri Cyber Tech</div>
           <div class="muted">
-            Security Monitoring Dashboard
+            AI-assisted Security Monitoring
           </div>
         </div>
 
@@ -203,47 +323,32 @@ async function renderDashboard(user) {
           Sign out
         </button>
 
-      </header>
+      </div>
 
-      <section class="card">
 
-        <h2 style="margin-top:0;">
-          Welcome 👋
-        </h2>
+      <div class="stats">
 
-        <p class="muted">
-          Logged in as: ${user.email}
-        </p>
-
-        <div class="stats">
-
-          <div class="stat">
-            <div class="muted">Open</div>
-            <h2>${openCount}</h2>
-          </div>
-
-          <div class="stat">
-            <div class="muted">Resolved</div>
-            <h2>${resolvedCount}</h2>
-          </div>
-
-          <div class="stat">
-            <div class="muted">High Risk</div>
-            <h2>${highCount}</h2>
-          </div>
-
+        <div class="stat">
+          <div class="muted">Open Incidents</div>
+          <div class="stat-number">${openCount}</div>
         </div>
 
-      </section>
+        <div class="stat">
+          <div class="muted">Resolved</div>
+          <div class="stat-number">${resolvedCount}</div>
+        </div>
 
-      <section class="card">
+        <div class="stat">
+          <div class="muted">High Risk</div>
+          <div class="stat-number">${highCount}</div>
+        </div>
 
-        <h2>➕ Add Security Incident</h2>
+      </div>
 
-        <p class="muted">
-          Add a suspicious message, email, login alert
-          or other security incident.
-        </p>
+
+      <div class="card">
+
+        <h2>Add Security Incident</h2>
 
         <form id="incidentForm">
 
@@ -255,6 +360,7 @@ async function renderDashboard(user) {
             placeholder="e.g. Suspicious Instagram DM"
           />
 
+
           <label>Message / incident details</label>
 
           <textarea
@@ -263,112 +369,136 @@ async function renderDashboard(user) {
             placeholder="Paste the suspicious message or describe the incident..."
           ></textarea>
 
+
           <label>Risk level</label>
 
           <select id="risk">
-
-            <option value="Low">
-              Low
-            </option>
-
-            <option value="Medium" selected>
-              Medium
-            </option>
-
-            <option value="High">
-              High
-            </option>
-
+            <option value="Low">Low</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="High">High</option>
           </select>
 
-          <label>Assessment</label>
+
+          <label>AI Assessment</label>
 
           <textarea
-  id="assessment"
-  placeholder="AI analysis will appear here..."
-></textarea>
+            id="assessment"
+            placeholder="AI analysis will appear here..."
+          ></textarea>
 
-<button
-  type="button"
-  id="analyzeBtn"
-  class="primary"
-  style="margin-bottom:15px;"
->
-  Analyze with AI
-</button>
 
-          <button class="primary" type="submit">
+          <button
+            type="button"
+            id="analyzeBtn"
+            class="primary"
+            style="margin-top:12px;"
+          >
+            Analyze with AI
+          </button>
+
+
+          <br><br>
+
+          <button
+            class="primary"
+            type="submit"
+          >
             Save Incident
           </button>
 
         </form>
 
-      </section>
+      </div>
 
-      <section class="card">
 
-        <h2>📋 Incident History</h2>
+      <div class="card">
 
-        <div id="incidentList">
+        <h2>Incident History</h2>
+
+        <div id="incidentHistory">
 
           ${
             incidents.length === 0
               ? `<p class="muted">No incidents yet.</p>`
-              : incidents.map(incident => `
-                
-                <div class="incident">
+              : incidents.map(incident => {
 
-                  <h3>
-                    ${escapeHtml(incident.title)}
-                  </h3>
+                  const riskClass =
+                    String(incident.risk).toLowerCase();
 
-                  <p>
-                    <strong>Risk:</strong>
-                    ${escapeHtml(incident.risk)}
-                  </p>
+                  const statusClass =
+                    String(incident.status).toLowerCase();
 
-                  <p>
-                    <strong>Status:</strong>
-                    ${escapeHtml(incident.status)}
-                  </p>
+                  return `
+                    <div class="incident">
 
-                  <p class="muted">
-                    ${escapeHtml(incident.message)}
-                  </p>
+                      <div class="incident-head">
 
-                  <p>
-                    <strong>Assessment:</strong><br>
-                    ${escapeHtml(incident.assessment)}
-                  </p>
+                        <div>
+                          <h3>
+                            ${escapeHtml(incident.title)}
+                          </h3>
 
-                  ${
-                    incident.status === "open"
-                      ? `
-                        <button
-                          class="primary resolve-btn"
-                          data-id="${incident.id}"
-                        >
-                          Mark Resolved
-                        </button>
-                      `
-                      : `
-                        <span style="color:#22c55e;">
-                          ✓ Resolved
-                        </span>
-                      `
-                  }
+                          <span class="badge ${riskClass}">
+                            ${escapeHtml(incident.risk)} Risk
+                          </span>
 
-                </div>
+                          <span class="badge ${statusClass}">
+                            ${escapeHtml(incident.status)}
+                          </span>
+                        </div>
 
-              `).join("")
+                        <div class="muted">
+                          ${new Date(
+                            incident.created_at
+                          ).toLocaleString()}
+                        </div>
+
+                      </div>
+
+
+                      <div class="incident-message">
+                        ${escapeHtml(incident.message)}
+                      </div>
+
+
+                      ${
+                        incident.assessment
+                          ? `
+                            <div class="assessment">
+                              ${escapeHtml(incident.assessment)}
+                            </div>
+                          `
+                          : ""
+                      }
+
+
+                      ${
+                        incident.status === "open"
+                          ? `
+                            <div class="actions">
+                              <button
+                                class="success resolveBtn"
+                                data-id="${incident.id}"
+                              >
+                                Mark Resolved
+                              </button>
+                            </div>
+                          `
+                          : ""
+                      }
+
+                    </div>
+                  `;
+                }).join("")
           }
 
         </div>
 
-      </section>
+      </div>
 
-    </main>
+    </div>
   `;
+
 
   document
     .getElementById("logout")
@@ -378,54 +508,117 @@ async function renderDashboard(user) {
 
       renderLogin();
     });
+
+
+  /*
+   * AI ANALYSIS
+   */
+
   document
-  .getElementById("analyzeBtn")
-  .addEventListener("click", async () => {
+    .getElementById("analyzeBtn")
+    .addEventListener("click", async () => {
 
-    const message =
-      document.getElementById("message").value.trim();
+      const message =
+        document.getElementById("message").value.trim();
 
-    if (!message) {
-      alert("Please enter the suspicious message first.");
-      return;
-    }
-
-    const button =
-      document.getElementById("analyzeBtn");
-
-    button.textContent = "Analyzing...";
-    button.disabled = true;
-
-    try {
-
-      const response = await fetch("/api/test", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message })
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "AI analysis failed");
+      if (!message) {
+        alert("Please enter the suspicious message first.");
+        return;
       }
 
-      document.getElementById("assessment").value =
-        data.analysis;
 
-    } catch (error) {
+      const button =
+        document.getElementById("analyzeBtn");
 
-      alert("AI analysis failed: " + error.message);
 
-    } finally {
+      button.textContent = "Analyzing...";
+      button.disabled = true;
 
-      button.textContent = "Analyze with AI";
-      button.disabled = false;
 
-    }
-  });
+      try {
+
+        const response = await fetch("/api/test", {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            message
+          })
+        });
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+          throw new Error(
+            data.error || "AI analysis failed"
+          );
+        }
+
+
+        const analysis =
+          data.analysis || "No analysis returned";
+
+
+        /*
+         * Put AI result inside Assessment
+         */
+
+        document.getElementById("assessment").value =
+          analysis;
+
+
+        /*
+         * Automatically read:
+         *
+         * RISK: Low
+         * RISK: Medium
+         * RISK: High
+         */
+
+        const riskMatch =
+          analysis.match(
+            /RISK:\s*(Low|Medium|High)/i
+          );
+
+
+        if (riskMatch) {
+
+          const aiRisk =
+            riskMatch[1].charAt(0).toUpperCase() +
+            riskMatch[1].slice(1).toLowerCase();
+
+
+          document.getElementById("risk").value =
+            aiRisk;
+        }
+
+
+      } catch (error) {
+
+        alert(
+          "AI analysis failed: " +
+          error.message
+        );
+
+      } finally {
+
+        button.textContent =
+          "Analyze with AI";
+
+        button.disabled = false;
+      }
+
+    });
+
+
+  /*
+   * SAVE INCIDENT
+   */
 
   document
     .getElementById("incidentForm")
@@ -433,28 +626,41 @@ async function renderDashboard(user) {
 
       event.preventDefault();
 
+
       const title =
         document.getElementById("title").value.trim();
+
 
       const message =
         document.getElementById("message").value.trim();
 
+
       const risk =
         document.getElementById("risk").value;
+
 
       const assessment =
         document.getElementById("assessment").value.trim();
 
-      const { error } = await supabase
-        .from("incidents")
-        .insert({
-          user_id: user.id,
-          title,
-          message,
-          risk,
-          assessment,
-          status: "open"
-        });
+
+      if (!title || !message) {
+        alert("Please fill in the title and message.");
+        return;
+      }
+
+
+      const { error } =
+        await supabase
+          .from("incidents")
+          .insert({
+            user_id: user.id,
+            title,
+            message,
+            risk,
+            assessment,
+            status: "open"
+          });
+
 
       if (error) {
 
@@ -466,63 +672,80 @@ async function renderDashboard(user) {
         return;
       }
 
-      alert("Incident saved successfully ✅");
+
+      alert(
+        "Incident saved successfully ✅"
+      );
+
 
       renderDashboard(user);
+
     });
+
+
+  /*
+   * RESOLVE INCIDENT
+   */
 
   document
-    .querySelectorAll(".resolve-btn")
+    .querySelectorAll(".resolveBtn")
     .forEach(button => {
 
-      button.addEventListener("click", async () => {
+      button.addEventListener(
+        "click",
+        async () => {
 
-        const id = button.dataset.id;
+          const id =
+            button.dataset.id;
 
-        const { error } = await supabase
-          .from("incidents")
-          .update({
-            status: "resolved",
-            updated_at: new Date().toISOString()
-          })
-          .eq("id", id)
-          .eq("user_id", user.id);
 
-        if (error) {
+          const { error } =
+            await supabase
+              .from("incidents")
+              .update({
+                status: "resolved",
+                updated_at:
+                  new Date().toISOString()
+              })
+              .eq("id", id)
+              .eq("user_id", user.id);
 
-          alert(
-            "Could not update incident: " +
-            error.message
-          );
 
-          return;
+          if (error) {
+
+            alert(
+              "Could not resolve incident: " +
+              error.message
+            );
+
+            return;
+          }
+
+
+          renderDashboard(user);
+
         }
-
-        renderDashboard(user);
-      });
+      );
 
     });
+
 }
 
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 
 async function startApp() {
 
   const {
-    data: { session }
+    data: {
+      session
+    }
   } = await supabase.auth.getSession();
+
 
   if (session?.user) {
 
-    await renderDashboard(session.user);
+    await renderDashboard(
+      session.user
+    );
 
   } else {
 
@@ -530,12 +753,15 @@ async function startApp() {
 
   }
 
+
   supabase.auth.onAuthStateChange(
     async (_event, session) => {
 
       if (session?.user) {
 
-        await renderDashboard(session.user);
+        await renderDashboard(
+          session.user
+        );
 
       } else {
 
@@ -545,6 +771,8 @@ async function startApp() {
 
     }
   );
+
 }
+
 
 startApp();
