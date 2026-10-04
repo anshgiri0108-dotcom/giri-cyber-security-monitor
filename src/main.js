@@ -35,10 +35,6 @@ const styles = `
     text-align: center;
   }
 
-  h1, h2, h3 {
-    margin-top: 0;
-  }
-
   .brand {
     font-size: 28px;
     font-weight: 700;
@@ -95,7 +91,7 @@ const styles = `
 
   .stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
     margin-bottom: 20px;
   }
@@ -214,7 +210,13 @@ const styles = `
     flex-wrap: wrap;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 850px) {
+    .stats {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 500px) {
     .stats {
       grid-template-columns: 1fr;
     }
@@ -248,7 +250,10 @@ function escapeHtml(value) {
 function renderLogin() {
   app.innerHTML = `
     <div class="login-box">
-      <div class="brand">Giri Cyber Tech</div>
+
+      <div class="brand">
+        Giri Cyber Tech
+      </div>
 
       <p class="muted">
         AI-assisted cybersecurity incident monitoring
@@ -257,33 +262,41 @@ function renderLogin() {
       <button id="googleLogin" class="primary">
         Continue with Google
       </button>
+
     </div>
   `;
+
 
   document
     .getElementById("googleLogin")
     .addEventListener("click", async () => {
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
+      const { error } =
+        await supabase.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: window.location.origin
+          }
+        });
 
       if (error) {
         alert("Login failed: " + error.message);
       }
+
     });
 }
 
 
 async function loadIncidents(userId) {
-  const { data, error } = await supabase
-    .from("incidents")
-    .select("*")
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
+
+  const { data, error } =
+    await supabase
+      .from("incidents")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", {
+        ascending: false
+      });
 
   if (error) {
     console.error(error);
@@ -296,30 +309,56 @@ async function loadIncidents(userId) {
 
 async function renderDashboard(user) {
 
-  const incidents = await loadIncidents(user.id);
+  const incidents =
+    await loadIncidents(user.id);
+
 
   const openCount =
-    incidents.filter(item => item.status === "open").length;
+    incidents.filter(
+      item => item.status === "open"
+    ).length;
+
 
   const resolvedCount =
-    incidents.filter(item => item.status === "resolved").length;
+    incidents.filter(
+      item => item.status === "resolved"
+    ).length;
+
 
   const highCount =
-    incidents.filter(item => item.risk === "High").length;
+    incidents.filter(
+      item => item.risk === "High"
+    ).length;
+
+
+  const totalCount =
+    incidents.length;
+
 
   app.innerHTML = `
+
     <div class="container">
+
 
       <div class="topbar">
 
         <div>
-          <div class="brand">Giri Cyber Tech</div>
+
+          <div class="brand">
+            Giri Cyber Tech
+          </div>
+
           <div class="muted">
             AI-assisted Security Monitoring
           </div>
+
         </div>
 
-        <button id="logout" class="danger">
+
+        <button
+          id="logout"
+          class="danger"
+        >
           Sign out
         </button>
 
@@ -328,31 +367,76 @@ async function renderDashboard(user) {
 
       <div class="stats">
 
-        <div class="stat">
-          <div class="muted">Open Incidents</div>
-          <div class="stat-number">${openCount}</div>
-        </div>
 
         <div class="stat">
-          <div class="muted">Resolved</div>
-          <div class="stat-number">${resolvedCount}</div>
+
+          <div class="muted">
+            Total Incidents
+          </div>
+
+          <div class="stat-number">
+            ${totalCount}
+          </div>
+
         </div>
 
+
         <div class="stat">
-          <div class="muted">High Risk</div>
-          <div class="stat-number">${highCount}</div>
+
+          <div class="muted">
+            Open Incidents
+          </div>
+
+          <div class="stat-number">
+            ${openCount}
+          </div>
+
         </div>
+
+
+        <div class="stat">
+
+          <div class="muted">
+            Resolved
+          </div>
+
+          <div class="stat-number">
+            ${resolvedCount}
+          </div>
+
+        </div>
+
+
+        <div class="stat">
+
+          <div class="muted">
+            High Risk
+          </div>
+
+          <div class="stat-number">
+            ${highCount}
+          </div>
+
+        </div>
+
 
       </div>
 
 
       <div class="card">
 
-        <h2>Add Security Incident</h2>
+        <h2>
+          Add Security Incident
+        </h2>
+
 
         <form id="incidentForm">
 
-          <label>Incident title</label>
+
+          <label>
+            Incident title
+          </label>
+
 
           <input
             id="title"
@@ -361,7 +445,10 @@ async function renderDashboard(user) {
           />
 
 
-          <label>Message / incident details</label>
+          <label>
+            Message / incident details
+          </label>
+
 
           <textarea
             id="message"
@@ -370,16 +457,35 @@ async function renderDashboard(user) {
           ></textarea>
 
 
-          <label>Risk level</label>
+          <label>
+            Risk level
+          </label>
+
 
           <select id="risk">
-            <option value="Low">Low</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="High">High</option>
+
+            <option value="Low">
+              Low
+            </option>
+
+            <option
+              value="Medium"
+              selected
+            >
+              Medium
+            </option>
+
+            <option value="High">
+              High
+            </option>
+
           </select>
 
 
-          <label>AI Assessment</label>
+          <label>
+            AI Assessment
+          </label>
+
 
           <textarea
             id="assessment"
@@ -399,12 +505,14 @@ async function renderDashboard(user) {
 
           <br><br>
 
+
           <button
             class="primary"
             type="submit"
           >
             Save Incident
           </button>
+
 
         </form>
 
@@ -413,101 +521,172 @@ async function renderDashboard(user) {
 
       <div class="card">
 
-        <h2>Incident History</h2>
+        <h2>
+          Incident History
+        </h2>
+
 
         <div id="incidentHistory">
 
+
           ${
             incidents.length === 0
-              ? `<p class="muted">No incidents yet.</p>`
-              : incidents.map(incident => {
 
-                  const riskClass =
-                    String(incident.risk).toLowerCase();
+              ? `
+                <p class="muted">
+                  No incidents yet.
+                </p>
+              `
 
-                  const statusClass =
-                    String(incident.status).toLowerCase();
+              : incidents.map(
+                  incident => {
 
-                  return `
-                    <div class="incident">
+                    const riskClass =
+                      String(
+                        incident.risk
+                      ).toLowerCase();
 
-                      <div class="incident-head">
 
-                        <div>
-                          <h3>
-                            ${escapeHtml(incident.title)}
-                          </h3>
+                    const statusClass =
+                      String(
+                        incident.status
+                      ).toLowerCase();
 
-                          <span class="badge ${riskClass}">
-                            ${escapeHtml(incident.risk)} Risk
-                          </span>
 
-                          <span class="badge ${statusClass}">
-                            ${escapeHtml(incident.status)}
-                          </span>
+                    return `
+
+                      <div class="incident">
+
+
+                        <div class="incident-head">
+
+
+                          <div>
+
+                            <h3>
+                              ${escapeHtml(
+                                incident.title
+                              )}
+                            </h3>
+
+
+                            <span
+                              class="badge ${riskClass}"
+                            >
+                              ${escapeHtml(
+                                incident.risk
+                              )}
+                              Risk
+                            </span>
+
+
+                            <span
+                              class="badge ${statusClass}"
+                            >
+                              ${escapeHtml(
+                                incident.status
+                              )}
+                            </span>
+
+                          </div>
+
+
+                          <div class="muted">
+
+                            ${new Date(
+                              incident.created_at
+                            ).toLocaleString()}
+
+                          </div>
+
+
                         </div>
 
-                        <div class="muted">
-                          ${new Date(
-                            incident.created_at
-                          ).toLocaleString()}
+
+                        <div class="incident-message">
+
+                          ${escapeHtml(
+                            incident.message
+                          )}
+
                         </div>
+
+
+                        ${
+                          incident.assessment
+
+                            ? `
+
+                              <div class="assessment">
+
+                                ${escapeHtml(
+                                  incident.assessment
+                                )}
+
+                              </div>
+
+                            `
+
+                            : ""
+                        }
+
+
+                        ${
+                          incident.status === "open"
+
+                            ? `
+
+                              <div class="actions">
+
+                                <button
+                                  class="success resolveBtn"
+                                  data-id="${incident.id}"
+                                >
+                                  Mark Resolved
+                                </button>
+
+                              </div>
+
+                            `
+
+                            : ""
+                        }
+
 
                       </div>
 
-
-                      <div class="incident-message">
-                        ${escapeHtml(incident.message)}
-                      </div>
-
-
-                      ${
-                        incident.assessment
-                          ? `
-                            <div class="assessment">
-                              ${escapeHtml(incident.assessment)}
-                            </div>
-                          `
-                          : ""
-                      }
-
-
-                      ${
-                        incident.status === "open"
-                          ? `
-                            <div class="actions">
-                              <button
-                                class="success resolveBtn"
-                                data-id="${incident.id}"
-                              >
-                                Mark Resolved
-                              </button>
-                            </div>
-                          `
-                          : ""
-                      }
-
-                    </div>
-                  `;
-                }).join("")
+                    `;
+                  }
+                ).join("")
           }
+
 
         </div>
 
       </div>
 
+
     </div>
+
   `;
 
 
+  /*
+   * LOGOUT
+   */
+
   document
     .getElementById("logout")
-    .addEventListener("click", async () => {
+    .addEventListener(
+      "click",
+      async () => {
 
-      await supabase.auth.signOut();
+        await supabase.auth.signOut();
 
-      renderLogin();
-    });
+        renderLogin();
+
+      }
+    );
 
 
   /*
@@ -516,104 +695,150 @@ async function renderDashboard(user) {
 
   document
     .getElementById("analyzeBtn")
-    .addEventListener("click", async () => {
-
-      const message =
-        document.getElementById("message").value.trim();
-
-      if (!message) {
-        alert("Please enter the suspicious message first.");
-        return;
-      }
+    .addEventListener(
+      "click",
+      async () => {
 
 
-      const button =
-        document.getElementById("analyzeBtn");
+        const message =
+          document
+            .getElementById("message")
+            .value
+            .trim();
 
 
-      button.textContent = "Analyzing...";
-      button.disabled = true;
+        if (!message) {
 
-
-      try {
-
-        const response = await fetch("/api/test", {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json"
-          },
-
-          body: JSON.stringify({
-            message
-          })
-        });
-
-
-        const data = await response.json();
-
-
-        if (!response.ok) {
-          throw new Error(
-            data.error || "AI analysis failed"
+          alert(
+            "Please enter the suspicious message first."
           );
+
+          return;
         }
 
 
-        const analysis =
-          data.analysis || "No analysis returned";
-
-
-        /*
-         * Put AI result inside Assessment
-         */
-
-        document.getElementById("assessment").value =
-          analysis;
-
-
-        /*
-         * Automatically read:
-         *
-         * RISK: Low
-         * RISK: Medium
-         * RISK: High
-         */
-
-        const riskMatch =
-          analysis.match(
-            /RISK:\s*(Low|Medium|High)/i
+        const button =
+          document.getElementById(
+            "analyzeBtn"
           );
 
-
-        if (riskMatch) {
-
-          const aiRisk =
-            riskMatch[1].charAt(0).toUpperCase() +
-            riskMatch[1].slice(1).toLowerCase();
-
-
-          document.getElementById("risk").value =
-            aiRisk;
-        }
-
-
-      } catch (error) {
-
-        alert(
-          "AI analysis failed: " +
-          error.message
-        );
-
-      } finally {
 
         button.textContent =
-          "Analyze with AI";
+          "Analyzing...";
 
-        button.disabled = false;
+
+        button.disabled = true;
+
+
+        try {
+
+
+          const response =
+            await fetch(
+              "/api/test",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify({
+                    message
+                  })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              data.error ||
+              "AI analysis failed"
+            );
+
+          }
+
+
+          const analysis =
+            data.analysis ||
+            "No analysis returned";
+
+
+          /*
+           * AI assessment
+           */
+
+          document
+            .getElementById(
+              "assessment"
+            )
+            .value =
+              analysis;
+
+
+          /*
+           * AI risk detection
+           */
+
+          const riskMatch =
+            analysis.match(
+              /RISK:\s*(Low|Medium|High)/i
+            );
+
+
+          if (riskMatch) {
+
+
+            const aiRisk =
+              riskMatch[1]
+                .charAt(0)
+                .toUpperCase() +
+
+              riskMatch[1]
+                .slice(1)
+                .toLowerCase();
+
+
+            document
+              .getElementById(
+                "risk"
+              )
+              .value =
+                aiRisk;
+
+          }
+
+
+        } catch (error) {
+
+
+          alert(
+            "AI analysis failed: " +
+            error.message
+          );
+
+
+        } finally {
+
+
+          button.textContent =
+            "Analyze with AI";
+
+
+          button.disabled = false;
+
+        }
+
+
       }
-
-    });
+    );
 
 
   /*
@@ -621,79 +846,115 @@ async function renderDashboard(user) {
    */
 
   document
-    .getElementById("incidentForm")
-    .addEventListener("submit", async (event) => {
-
-      event.preventDefault();
-
-
-      const title =
-        document.getElementById("title").value.trim();
+    .getElementById(
+      "incidentForm"
+    )
+    .addEventListener(
+      "submit",
+      async event => {
 
 
-      const message =
-        document.getElementById("message").value.trim();
+        event.preventDefault();
 
 
-      const risk =
-        document.getElementById("risk").value;
+        const title =
+          document
+            .getElementById("title")
+            .value
+            .trim();
 
 
-      const assessment =
-        document.getElementById("assessment").value.trim();
+        const message =
+          document
+            .getElementById("message")
+            .value
+            .trim();
 
 
-      if (!title || !message) {
-        alert("Please fill in the title and message.");
-        return;
-      }
+        const risk =
+          document
+            .getElementById("risk")
+            .value;
 
 
-      const { error } =
-        await supabase
-          .from("incidents")
-          .insert({
-            user_id: user.id,
-            title,
-            message,
-            risk,
-            assessment,
-            status: "open"
-          });
+        const assessment =
+          document
+            .getElementById("assessment")
+            .value
+            .trim();
 
 
-      if (error) {
+        if (!title || !message) {
+
+          alert(
+            "Please fill in the title and message."
+          );
+
+          return;
+
+        }
+
+
+        const { error } =
+          await supabase
+            .from("incidents")
+            .insert({
+
+              user_id:
+                user.id,
+
+              title,
+
+              message,
+
+              risk,
+
+              assessment,
+
+              status:
+                "open"
+
+            });
+
+
+        if (error) {
+
+          alert(
+            "Could not save incident: " +
+            error.message
+          );
+
+          return;
+
+        }
+
 
         alert(
-          "Could not save incident: " +
-          error.message
+          "Incident saved successfully ✅"
         );
 
-        return;
+
+        renderDashboard(user);
+
       }
-
-
-      alert(
-        "Incident saved successfully ✅"
-      );
-
-
-      renderDashboard(user);
-
-    });
+    );
 
 
   /*
-   * RESOLVE INCIDENT
+   * MARK RESOLVED
    */
 
   document
-    .querySelectorAll(".resolveBtn")
+    .querySelectorAll(
+      ".resolveBtn"
+    )
     .forEach(button => {
+
 
       button.addEventListener(
         "click",
         async () => {
+
 
           const id =
             button.dataset.id;
@@ -703,12 +964,22 @@ async function renderDashboard(user) {
             await supabase
               .from("incidents")
               .update({
-                status: "resolved",
+
+                status:
+                  "resolved",
+
                 updated_at:
                   new Date().toISOString()
+
               })
-              .eq("id", id)
-              .eq("user_id", user.id);
+              .eq(
+                "id",
+                id
+              )
+              .eq(
+                "user_id",
+                user.id
+              );
 
 
           if (error) {
@@ -719,6 +990,7 @@ async function renderDashboard(user) {
             );
 
             return;
+
           }
 
 
@@ -734,11 +1006,13 @@ async function renderDashboard(user) {
 
 async function startApp() {
 
+
   const {
     data: {
       session
     }
-  } = await supabase.auth.getSession();
+  } =
+    await supabase.auth.getSession();
 
 
   if (session?.user) {
@@ -756,6 +1030,7 @@ async function startApp() {
 
   supabase.auth.onAuthStateChange(
     async (_event, session) => {
+
 
       if (session?.user) {
 
