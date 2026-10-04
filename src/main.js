@@ -195,12 +195,33 @@ const styles = `
     white-space: pre-wrap;
   }
 
-  .assessment {
-    background: #f8faff;
-    border-left: 4px solid #172033;
-    padding: 12px;
+  .ai-report {
+    margin-top: 15px;
+    border: 1px solid #e1e6ef;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .report-header {
+    padding: 12px 15px;
+    background: #f7f9fc;
+    font-weight: 700;
+  }
+
+  .report-section {
+    padding: 15px;
+    border-top: 1px solid #e1e6ef;
+  }
+
+  .report-title {
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .report-content {
     white-space: pre-wrap;
-    margin-top: 12px;
+    line-height: 1.55;
+    color: #38445a;
   }
 
   .actions {
@@ -247,7 +268,85 @@ function escapeHtml(value) {
 }
 
 
+function renderAIReport(assessment, risk) {
+
+  if (!assessment) {
+    return "";
+  }
+
+  const text = String(assessment);
+
+  let analysis = text;
+  let actions = text;
+
+  const analysisMatch =
+    text.match(
+      /ANALYSIS:\s*([\s\S]*?)(?=\n\s*ACTIONS:|$)/i
+    );
+
+  const actionsMatch =
+    text.match(
+      /ACTIONS:\s*([\s\S]*)/i
+    );
+
+  if (analysisMatch) {
+    analysis = analysisMatch[1].trim();
+  }
+
+  if (actionsMatch) {
+    actions = actionsMatch[1].trim();
+  }
+
+  return `
+    <div class="ai-report">
+
+      <div class="report-header">
+        AI Security Assessment
+      </div>
+
+      <div class="report-section">
+
+        <div class="report-title">
+          Risk Level
+        </div>
+
+        <div class="report-content">
+          ${escapeHtml(risk)} Risk
+        </div>
+
+      </div>
+
+      <div class="report-section">
+
+        <div class="report-title">
+          Warning Signs & Analysis
+        </div>
+
+        <div class="report-content">
+          ${escapeHtml(analysis)}
+        </div>
+
+      </div>
+
+      <div class="report-section">
+
+        <div class="report-title">
+          Recommended Actions
+        </div>
+
+        <div class="report-content">
+          ${escapeHtml(actions)}
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+
 function renderLogin() {
+
   app.innerHTML = `
     <div class="login-box">
 
@@ -259,7 +358,10 @@ function renderLogin() {
         AI-assisted cybersecurity incident monitoring
       </p>
 
-      <button id="googleLogin" class="primary">
+      <button
+        id="googleLogin"
+        class="primary"
+      >
         Continue with Google
       </button>
 
@@ -269,21 +371,28 @@ function renderLogin() {
 
   document
     .getElementById("googleLogin")
-    .addEventListener("click", async () => {
+    .addEventListener(
+      "click",
+      async () => {
 
-      const { error } =
-        await supabase.auth.signInWithOAuth({
-          provider: "google",
-          options: {
-            redirectTo: window.location.origin
-          }
-        });
+        const { error } =
+          await supabase.auth.signInWithOAuth({
+            provider: "google",
+            options: {
+              redirectTo:
+                window.location.origin
+            }
+          });
 
-      if (error) {
-        alert("Login failed: " + error.message);
+        if (error) {
+          alert(
+            "Login failed: " +
+            error.message
+          );
+        }
+
       }
-
-    });
+    );
 }
 
 
@@ -294,9 +403,12 @@ async function loadIncidents(userId) {
       .from("incidents")
       .select("*")
       .eq("user_id", userId)
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
 
   if (error) {
     console.error(error);
@@ -315,19 +427,22 @@ async function renderDashboard(user) {
 
   const openCount =
     incidents.filter(
-      item => item.status === "open"
+      item =>
+        item.status === "open"
     ).length;
 
 
   const resolvedCount =
     incidents.filter(
-      item => item.status === "resolved"
+      item =>
+        item.status === "resolved"
     ).length;
 
 
   const highCount =
     incidents.filter(
-      item => item.risk === "High"
+      item =>
+        item.risk === "High"
     ).length;
 
 
@@ -353,7 +468,6 @@ async function renderDashboard(user) {
           </div>
 
         </div>
-
 
         <button
           id="logout"
@@ -538,126 +652,117 @@ async function renderDashboard(user) {
                 </p>
               `
 
-              : incidents.map(
-                  incident => {
+              : incidents
+                  .map(
+                    incident => {
 
-                    const riskClass =
-                      String(
-                        incident.risk
-                      ).toLowerCase();
-
-
-                    const statusClass =
-                      String(
-                        incident.status
-                      ).toLowerCase();
+                      const riskClass =
+                        String(
+                          incident.risk
+                        ).toLowerCase();
 
 
-                    return `
-
-                      <div class="incident">
-
-
-                        <div class="incident-head">
+                      const statusClass =
+                        String(
+                          incident.status
+                        ).toLowerCase();
 
 
-                          <div>
+                      return `
 
-                            <h3>
-                              ${escapeHtml(
-                                incident.title
-                              )}
-                            </h3>
+                        <div class="incident">
 
 
-                            <span
-                              class="badge ${riskClass}"
-                            >
-                              ${escapeHtml(
-                                incident.risk
-                              )}
-                              Risk
-                            </span>
+                          <div class="incident-head">
 
 
-                            <span
-                              class="badge ${statusClass}"
-                            >
-                              ${escapeHtml(
-                                incident.status
-                              )}
-                            </span>
+                            <div>
+
+                              <h3>
+                                ${escapeHtml(
+                                  incident.title
+                                )}
+                              </h3>
+
+
+                              <span
+                                class="badge ${riskClass}"
+                              >
+                                ${escapeHtml(
+                                  incident.risk
+                                )}
+                                Risk
+                              </span>
+
+
+                              <span
+                                class="badge ${statusClass}"
+                              >
+                                ${escapeHtml(
+                                  incident.status
+                                )}
+                              </span>
+
+                            </div>
+
+
+                            <div class="muted">
+
+                              ${new Date(
+                                incident.created_at
+                              ).toLocaleString()}
+
+                            </div>
+
 
                           </div>
 
 
-                          <div class="muted">
+                          <div class="incident-message">
 
-                            ${new Date(
-                              incident.created_at
-                            ).toLocaleString()}
+                            ${escapeHtml(
+                              incident.message
+                            )}
 
                           </div>
 
 
-                        </div>
-
-
-                        <div class="incident-message">
-
-                          ${escapeHtml(
-                            incident.message
+                          ${renderAIReport(
+                            incident.assessment,
+                            incident.risk
                           )}
 
+
+                          ${
+                            incident.status ===
+                            "open"
+
+                              ? `
+
+                                <div class="actions">
+
+                                  <button
+                                    class="success resolveBtn"
+                                    data-id="${incident.id}"
+                                  >
+                                    Mark Resolved
+                                  </button>
+
+                                </div>
+
+                              `
+
+                              : ""
+                          }
+
+
                         </div>
 
+                      `;
 
-                        ${
-                          incident.assessment
-
-                            ? `
-
-                              <div class="assessment">
-
-                                ${escapeHtml(
-                                  incident.assessment
-                                )}
-
-                              </div>
-
-                            `
-
-                            : ""
-                        }
-
-
-                        ${
-                          incident.status === "open"
-
-                            ? `
-
-                              <div class="actions">
-
-                                <button
-                                  class="success resolveBtn"
-                                  data-id="${incident.id}"
-                                >
-                                  Mark Resolved
-                                </button>
-
-                              </div>
-
-                            `
-
-                            : ""
-                        }
-
-
-                      </div>
-
-                    `;
-                  }
-                ).join("")
+                    }
+                  )
+                  .join("")
           }
 
 
@@ -771,10 +876,6 @@ async function renderDashboard(user) {
             "No analysis returned";
 
 
-          /*
-           * AI assessment
-           */
-
           document
             .getElementById(
               "assessment"
@@ -783,10 +884,6 @@ async function renderDashboard(user) {
               analysis;
 
 
-          /*
-           * AI risk detection
-           */
-
           const riskMatch =
             analysis.match(
               /RISK:\s*(Low|Medium|High)/i
@@ -794,7 +891,6 @@ async function renderDashboard(user) {
 
 
           if (riskMatch) {
-
 
             const aiRisk =
               riskMatch[1]
@@ -818,24 +914,20 @@ async function renderDashboard(user) {
 
         } catch (error) {
 
-
           alert(
             "AI analysis failed: " +
             error.message
           );
 
-
         } finally {
-
 
           button.textContent =
             "Analyze with AI";
 
-
-          button.disabled = false;
+          button.disabled =
+            false;
 
         }
-
 
       }
     );
