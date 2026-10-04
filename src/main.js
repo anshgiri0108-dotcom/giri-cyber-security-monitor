@@ -257,7 +257,6 @@ const styleTag = document.createElement("style");
 styleTag.textContent = styles;
 document.head.appendChild(styleTag);
 
-
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -267,9 +266,7 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-
 function renderAIReport(assessment, risk) {
-
   if (!assessment) {
     return "";
   }
@@ -344,7 +341,6 @@ function renderAIReport(assessment, risk) {
   `;
 }
 
-
 function renderLogin() {
 
   app.innerHTML = `
@@ -367,7 +363,6 @@ function renderLogin() {
 
     </div>
   `;
-
 
   document
     .getElementById("googleLogin")
@@ -395,7 +390,6 @@ function renderLogin() {
     );
 }
 
-
 async function loadIncidents(userId) {
 
   const { data, error } =
@@ -418,12 +412,10 @@ async function loadIncidents(userId) {
   return data || [];
 }
 
-
 async function renderDashboard(user) {
 
   const incidents =
     await loadIncidents(user.id);
-
 
   const openCount =
     incidents.filter(
@@ -431,13 +423,11 @@ async function renderDashboard(user) {
         item.status === "open"
     ).length;
 
-
   const resolvedCount =
     incidents.filter(
       item =>
         item.status === "resolved"
     ).length;
-
 
   const highCount =
     incidents.filter(
@@ -445,15 +435,12 @@ async function renderDashboard(user) {
         item.risk === "High"
     ).length;
 
-
   const totalCount =
     incidents.length;
-
 
   app.innerHTML = `
 
     <div class="container">
-
 
       <div class="topbar">
 
@@ -478,9 +465,7 @@ async function renderDashboard(user) {
 
       </div>
 
-
       <div class="stats">
-
 
         <div class="stat">
 
@@ -494,7 +479,6 @@ async function renderDashboard(user) {
 
         </div>
 
-
         <div class="stat">
 
           <div class="muted">
@@ -506,7 +490,6 @@ async function renderDashboard(user) {
           </div>
 
         </div>
-
 
         <div class="stat">
 
@@ -520,7 +503,6 @@ async function renderDashboard(user) {
 
         </div>
 
-
         <div class="stat">
 
           <div class="muted">
@@ -533,9 +515,7 @@ async function renderDashboard(user) {
 
         </div>
 
-
       </div>
-
 
       <div class="card">
 
@@ -543,14 +523,11 @@ async function renderDashboard(user) {
           Add Security Incident
         </h2>
 
-
         <form id="incidentForm">
-
 
           <label>
             Incident title
           </label>
-
 
           <input
             id="title"
@@ -558,11 +535,9 @@ async function renderDashboard(user) {
             placeholder="e.g. Suspicious Instagram DM"
           />
 
-
           <label>
             Message / incident details
           </label>
-
 
           <textarea
             id="message"
@@ -570,11 +545,9 @@ async function renderDashboard(user) {
             placeholder="Paste the suspicious message or describe the incident..."
           ></textarea>
 
-
           <label>
             Risk level
           </label>
-
 
           <select id="risk">
 
@@ -595,17 +568,14 @@ async function renderDashboard(user) {
 
           </select>
 
-
           <label>
             AI Assessment
           </label>
-
 
           <textarea
             id="assessment"
             placeholder="AI analysis will appear here..."
           ></textarea>
-
 
           <button
             type="button"
@@ -616,9 +586,7 @@ async function renderDashboard(user) {
             Analyze with AI
           </button>
 
-
           <br><br>
-
 
           <button
             class="primary"
@@ -627,11 +595,9 @@ async function renderDashboard(user) {
             Save Incident
           </button>
 
-
         </form>
 
       </div>
-
 
       <div class="card">
 
@@ -639,9 +605,7 @@ async function renderDashboard(user) {
           Incident History
         </h2>
 
-
         <div id="incidentHistory">
-
 
           ${
             incidents.length === 0
@@ -661,20 +625,16 @@ async function renderDashboard(user) {
                           incident.risk
                         ).toLowerCase();
 
-
                       const statusClass =
                         String(
                           incident.status
                         ).toLowerCase();
 
-
                       return `
 
                         <div class="incident">
 
-
                           <div class="incident-head">
-
 
                             <div>
 
@@ -684,7 +644,6 @@ async function renderDashboard(user) {
                                 )}
                               </h3>
 
-
                               <span
                                 class="badge ${riskClass}"
                               >
@@ -693,7 +652,6 @@ async function renderDashboard(user) {
                                 )}
                                 Risk
                               </span>
-
 
                               <span
                                 class="badge ${statusClass}"
@@ -705,18 +663,13 @@ async function renderDashboard(user) {
 
                             </div>
 
-
                             <div class="muted">
-
                               ${new Date(
                                 incident.created_at
                               ).toLocaleString()}
-
                             </div>
 
-
                           </div>
-
 
                           <div class="incident-message">
 
@@ -726,55 +679,53 @@ async function renderDashboard(user) {
 
                           </div>
 
-
                           ${renderAIReport(
                             incident.assessment,
                             incident.risk
                           )}
 
+                          <div class="actions">
 
-                          ${
-                            incident.status ===
-                            "open"
+                            ${
+                              incident.status ===
+                              "open"
 
-                              ? `
-
-                                <div class="actions">
-
+                                ? `
                                   <button
                                     class="success resolveBtn"
                                     data-id="${incident.id}"
                                   >
                                     Mark Resolved
                                   </button>
+                                `
 
-                                </div>
+                                : ""
+                            }
 
-                              `
+                            <button
+                              class="danger deleteBtn"
+                              data-id="${incident.id}"
+                            >
+                              Delete
+                            </button>
 
-                              : ""
-                          }
-
+                          </div>
 
                         </div>
 
                       `;
-
                     }
                   )
                   .join("")
           }
 
-
         </div>
 
       </div>
 
-
     </div>
 
   `;
-
 
   /*
    * LOGOUT
@@ -793,7 +744,6 @@ async function renderDashboard(user) {
       }
     );
 
-
   /*
    * AI ANALYSIS
    */
@@ -804,13 +754,11 @@ async function renderDashboard(user) {
       "click",
       async () => {
 
-
         const message =
           document
             .getElementById("message")
             .value
             .trim();
-
 
         if (!message) {
 
@@ -821,22 +769,17 @@ async function renderDashboard(user) {
           return;
         }
 
-
         const button =
           document.getElementById(
             "analyzeBtn"
           );
 
-
         button.textContent =
           "Analyzing...";
 
-
         button.disabled = true;
 
-
         try {
-
 
           const response =
             await fetch(
@@ -856,10 +799,8 @@ async function renderDashboard(user) {
               }
             );
 
-
           const data =
             await response.json();
-
 
           if (!response.ok) {
 
@@ -870,11 +811,9 @@ async function renderDashboard(user) {
 
           }
 
-
           const analysis =
             data.analysis ||
             "No analysis returned";
-
 
           document
             .getElementById(
@@ -883,12 +822,10 @@ async function renderDashboard(user) {
             .value =
               analysis;
 
-
           const riskMatch =
             analysis.match(
               /RISK:\s*(Low|Medium|High)/i
             );
-
 
           if (riskMatch) {
 
@@ -901,7 +838,6 @@ async function renderDashboard(user) {
                 .slice(1)
                 .toLowerCase();
 
-
             document
               .getElementById(
                 "risk"
@@ -910,7 +846,6 @@ async function renderDashboard(user) {
                 aiRisk;
 
           }
-
 
         } catch (error) {
 
@@ -932,7 +867,6 @@ async function renderDashboard(user) {
       }
     );
 
-
   /*
    * SAVE INCIDENT
    */
@@ -945,9 +879,7 @@ async function renderDashboard(user) {
       "submit",
       async event => {
 
-
         event.preventDefault();
-
 
         const title =
           document
@@ -955,26 +887,22 @@ async function renderDashboard(user) {
             .value
             .trim();
 
-
         const message =
           document
             .getElementById("message")
             .value
             .trim();
 
-
         const risk =
           document
             .getElementById("risk")
             .value;
-
 
         const assessment =
           document
             .getElementById("assessment")
             .value
             .trim();
-
 
         if (!title || !message) {
 
@@ -983,9 +911,7 @@ async function renderDashboard(user) {
           );
 
           return;
-
         }
-
 
         const { error } =
           await supabase
@@ -1008,7 +934,6 @@ async function renderDashboard(user) {
 
             });
 
-
         if (error) {
 
           alert(
@@ -1017,19 +942,75 @@ async function renderDashboard(user) {
           );
 
           return;
-
         }
-
 
         alert(
           "Incident saved successfully ✅"
         );
 
-
         renderDashboard(user);
 
       }
     );
+    /*
+   * DELETE INCIDENT
+   */
+
+  document
+    .querySelectorAll(
+      ".deleteBtn"
+    )
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        async () => {
+
+          const confirmed =
+            confirm(
+              "Are you sure you want to permanently delete this incident?"
+            );
+
+          if (!confirmed) {
+            return;
+          }
+
+          const id =
+            button.dataset.id;
+
+          const { error } =
+            await supabase
+              .from("incidents")
+              .delete()
+              .eq(
+                "id",
+                id
+              )
+              .eq(
+                "user_id",
+                user.id
+              );
+
+          if (error) {
+
+            alert(
+              "Could not delete incident: " +
+              error.message
+            );
+
+            return;
+          }
+
+          alert(
+            "Incident deleted successfully ✅"
+          );
+
+          renderDashboard(user);
+
+        }
+      );
+
+    });
 
 
   /*
@@ -1042,27 +1023,22 @@ async function renderDashboard(user) {
     )
     .forEach(button => {
 
-
       button.addEventListener(
         "click",
         async () => {
 
-
           const id =
             button.dataset.id;
-
 
           const { error } =
             await supabase
               .from("incidents")
               .update({
-
                 status:
                   "resolved",
 
                 updated_at:
                   new Date().toISOString()
-
               })
               .eq(
                 "id",
@@ -1073,7 +1049,6 @@ async function renderDashboard(user) {
                 user.id
               );
 
-
           if (error) {
 
             alert(
@@ -1082,9 +1057,7 @@ async function renderDashboard(user) {
             );
 
             return;
-
           }
-
 
           renderDashboard(user);
 
@@ -1098,14 +1071,12 @@ async function renderDashboard(user) {
 
 async function startApp() {
 
-
   const {
     data: {
       session
     }
   } =
     await supabase.auth.getSession();
-
 
   if (session?.user) {
 
@@ -1119,10 +1090,8 @@ async function startApp() {
 
   }
 
-
   supabase.auth.onAuthStateChange(
     async (_event, session) => {
-
 
       if (session?.user) {
 
