@@ -1142,13 +1142,12 @@ async function renderDashboard(user) {
 
         } catch (error) {
 
-          alert(
-            "AI analysis failed: 
-" +
-            error.message
-          );
+  alert(
+    "AI analysis failed: " +
+    error.message
+  );
 
-        } finally {
+} finally {
 
           button.textContent =
             "Analyze with AI";
