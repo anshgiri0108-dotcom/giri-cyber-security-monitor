@@ -132,11 +132,19 @@ const styles = `
     border-radius: 10px;
     font-size: 15px;
     font-family: inherit;
+    background: white;
   }
 
   textarea {
     min-height: 130px;
     resize: vertical;
+  }
+
+  .filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
   }
 
   .incident {
@@ -231,9 +239,23 @@ const styles = `
     flex-wrap: wrap;
   }
 
+  .no-results {
+    text-align: center;
+    padding: 25px;
+    color: #687386;
+  }
+
+  .filter-label {
+    margin-top: 0;
+  }
+
   @media (max-width: 850px) {
     .stats {
       grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filters {
+      grid-template-columns: 1fr;
     }
   }
 
@@ -302,7 +324,6 @@ function renderAIReport(assessment, risk) {
       </div>
 
       <div class="report-section">
-
         <div class="report-title">
           Risk Level
         </div>
@@ -310,11 +331,9 @@ function renderAIReport(assessment, risk) {
         <div class="report-content">
           ${escapeHtml(risk)} Risk
         </div>
-
       </div>
 
       <div class="report-section">
-
         <div class="report-title">
           Warning Signs & Analysis
         </div>
@@ -322,11 +341,9 @@ function renderAIReport(assessment, risk) {
         <div class="report-content">
           ${escapeHtml(analysis)}
         </div>
-
       </div>
 
       <div class="report-section">
-
         <div class="report-title">
           Recommended Actions
         </div>
@@ -334,7 +351,6 @@ function renderAIReport(assessment, risk) {
         <div class="report-content">
           ${escapeHtml(actions)}
         </div>
-
       </div>
 
     </div>
@@ -385,7 +401,6 @@ function renderLogin() {
             error.message
           );
         }
-
       }
     );
 }
@@ -410,6 +425,166 @@ async function loadIncidents(userId) {
   }
 
   return data || [];
+}
+
+function renderIncidentList(
+  incidents,
+  searchText,
+  riskFilter,
+  statusFilter
+) {
+
+  const search =
+    searchText
+      .trim()
+      .toLowerCase();
+
+  const filtered =
+    incidents.filter(
+      incident => {
+
+        const matchesSearch =
+          !search ||
+          String(
+            incident.title || ""
+          )
+            .toLowerCase()
+            .includes(search) ||
+          String(
+            incident.message || ""
+          )
+            .toLowerCase()
+            .includes(search) ||
+          String(
+            incident.assessment || ""
+          )
+            .toLowerCase()
+            .includes(search);
+
+        const matchesRisk =
+          riskFilter === "all" ||
+          incident.risk === riskFilter;
+
+        const matchesStatus =
+          statusFilter === "all" ||
+          incident.status === statusFilter;
+
+        return (
+          matchesSearch &&
+          matchesRisk &&
+          matchesStatus
+        );
+      }
+    );
+
+  if (filtered.length === 0) {
+
+    return `
+      <div class="no-results">
+        No incidents match the selected filters.
+      </div>
+    `;
+  }
+
+  return filtered
+    .map(
+      incident => {
+
+        const riskClass =
+          String(
+            incident.risk
+          ).toLowerCase();
+
+        const statusClass =
+          String(
+            incident.status
+          ).toLowerCase();
+
+        return `
+
+          <div class="incident">
+
+            <div class="incident-head">
+
+              <div>
+
+                <h3>
+                  ${escapeHtml(
+                    incident.title
+                  )}
+                </h3>
+
+                <span
+                  class="badge ${riskClass}"
+                >
+                  ${escapeHtml(
+                    incident.risk
+                  )}
+                  Risk
+                </span>
+
+                <span
+                  class="badge ${statusClass}"
+                >
+                  ${escapeHtml(
+                    incident.status
+                  )}
+                </span>
+
+              </div>
+
+              <div class="muted">
+                ${new Date(
+                  incident.created_at
+                ).toLocaleString()}
+              </div>
+
+            </div>
+
+            <div class="incident-message">
+              ${escapeHtml(
+                incident.message
+              )}
+            </div>
+
+            ${renderAIReport(
+              incident.assessment,
+              incident.risk
+            )}
+
+            <div class="actions">
+
+              ${
+                incident.status ===
+                "open"
+
+                  ? `
+                    <button
+                      class="success resolveBtn"
+                      data-id="${incident.id}"
+                    >
+                      Mark Resolved
+                    </button>
+                  `
+
+                  : ""
+              }
+
+              <button
+                class="danger deleteBtn"
+                data-id="${incident.id}"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </div>
+
+        `;
+      }
+    )
+    .join("");
 }
 
 async function renderDashboard(user) {
@@ -605,119 +780,84 @@ async function renderDashboard(user) {
           Incident History
         </h2>
 
+        <div class="filters">
+
+          <div>
+
+            <label class="filter-label">
+              Search
+            </label>
+
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search incidents..."
+            />
+
+          </div>
+
+          <div>
+
+            <label class="filter-label">
+              Risk Level
+            </label>
+
+            <select id="riskFilter">
+
+              <option value="all">
+                All Risks
+              </option>
+
+              <option value="Low">
+                Low
+              </option>
+
+              <option value="Medium">
+                Medium
+              </option>
+
+              <option value="High">
+                High
+              </option>
+
+            </select>
+
+          </div>
+
+          <div>
+
+            <label class="filter-label">
+              Status
+            </label>
+
+            <select id="statusFilter">
+
+              <option value="all">
+                All Status
+              </option>
+
+              <option value="open">
+                Open
+              </option>
+
+              <option value="resolved">
+                Resolved
+              </option>
+
+            </select>
+
+          </div>
+
+        </div>
+
         <div id="incidentHistory">
 
-          ${
-            incidents.length === 0
-
-              ? `
-                <p class="muted">
-                  No incidents yet.
-                </p>
-              `
-
-              : incidents
-                  .map(
-                    incident => {
-
-                      const riskClass =
-                        String(
-                          incident.risk
-                        ).toLowerCase();
-
-                      const statusClass =
-                        String(
-                          incident.status
-                        ).toLowerCase();
-
-                      return `
-
-                        <div class="incident">
-
-                          <div class="incident-head">
-
-                            <div>
-
-                              <h3>
-                                ${escapeHtml(
-                                  incident.title
-                                )}
-                              </h3>
-
-                              <span
-                                class="badge ${riskClass}"
-                              >
-                                ${escapeHtml(
-                                  incident.risk
-                                )}
-                                Risk
-                              </span>
-
-                              <span
-                                class="badge ${statusClass}"
-                              >
-                                ${escapeHtml(
-                                  incident.status
-                                )}
-                              </span>
-
-                            </div>
-
-                            <div class="muted">
-                              ${new Date(
-                                incident.created_at
-                              ).toLocaleString()}
-                            </div>
-
-                          </div>
-
-                          <div class="incident-message">
-
-                            ${escapeHtml(
-                              incident.message
-                            )}
-
-                          </div>
-
-                          ${renderAIReport(
-                            incident.assessment,
-                            incident.risk
-                          )}
-
-                          <div class="actions">
-
-                            ${
-                              incident.status ===
-                              "open"
-
-                                ? `
-                                  <button
-                                    class="success resolveBtn"
-                                    data-id="${incident.id}"
-                                  >
-                                    Mark Resolved
-                                  </button>
-                                `
-
-                                : ""
-                            }
-
-                            <button
-                              class="danger deleteBtn"
-                              data-id="${incident.id}"
-                            >
-                              Delete
-                            </button>
-
-                          </div>
-
-                        </div>
-
-                      `;
-                    }
-                  )
-                  .join("")
-          }
+          ${renderIncidentList(
+            incidents,
+            "",
+            "all",
+            "all"
+          )}
 
         </div>
 
@@ -726,10 +866,6 @@ async function renderDashboard(user) {
     </div>
 
   `;
-
-  /*
-   * LOGOUT
-   */
 
   document
     .getElementById("logout")
@@ -744,9 +880,165 @@ async function renderDashboard(user) {
       }
     );
 
-  /*
-   * AI ANALYSIS
-   */
+  const searchInput =
+    document.getElementById(
+      "searchInput"
+    );
+
+  const riskFilter =
+    document.getElementById(
+      "riskFilter"
+    );
+
+  const statusFilter =
+    document.getElementById(
+      "statusFilter"
+    );
+
+  const incidentHistory =
+    document.getElementById(
+      "incidentHistory"
+    );
+
+  function updateFilters() {
+
+    incidentHistory.innerHTML =
+      renderIncidentList(
+        incidents,
+        searchInput.value,
+        riskFilter.value,
+        statusFilter.value
+      );
+
+    attachIncidentButtons();
+
+  }
+
+  searchInput.addEventListener(
+    "input",
+    updateFilters
+  );
+
+  riskFilter.addEventListener(
+    "change",
+    updateFilters
+  );
+
+  statusFilter.addEventListener(
+    "change",
+    updateFilters
+  );
+
+  function attachIncidentButtons() {
+
+    document
+      .querySelectorAll(
+        ".deleteBtn"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          async () => {
+
+            const confirmed =
+              confirm(
+                "Are you sure you want to permanently delete this incident?"
+              );
+
+            if (!confirmed) {
+              return;
+            }
+
+            const id =
+              button.dataset.id;
+
+            const { error } =
+              await supabase
+                .from("incidents")
+                .delete()
+                .eq(
+                  "id",
+                  id
+                )
+                .eq(
+                  "user_id",
+                  user.id
+                );
+
+            if (error) {
+
+              alert(
+                "Could not delete incident: " +
+                error.message
+              );
+
+              return;
+            }
+
+            alert(
+              "Incident deleted successfully ✅"
+            );
+
+            renderDashboard(user);
+
+          }
+        );
+
+      });
+
+    document
+      .querySelectorAll(
+        ".resolveBtn"
+      )
+      .forEach(button => {
+
+        button.addEventListener(
+          "click",
+          async () => {
+
+            const id =
+              button.dataset.id;
+
+            const { error } =
+              await supabase
+                .from("incidents")
+                .update({
+                  status:
+                    "resolved",
+
+                  updated_at:
+                    new Date().toISOString()
+                })
+                .eq(
+                  "id",
+                  id
+                )
+                .eq(
+                  "user_id",
+                  user.id
+                );
+
+            if (error) {
+
+              alert(
+                "Could not resolve incident: " +
+                error.message
+              );
+
+              return;
+            }
+
+            renderDashboard(user);
+
+          }
+        );
+
+      });
+
+  }
+
+  attachIncidentButtons();
 
   document
     .getElementById("analyzeBtn")
@@ -777,7 +1069,8 @@ async function renderDashboard(user) {
         button.textContent =
           "Analyzing...";
 
-        button.disabled = true;
+        button.disabled =
+          true;
 
         try {
 
@@ -843,14 +1136,15 @@ async function renderDashboard(user) {
                 "risk"
               )
               .value =
-                aiRisk;
+              aiRisk;
 
           }
 
         } catch (error) {
 
           alert(
-            "AI analysis failed: " +
+            "AI analysis failed: 
+            " +
             error.message
           );
 
@@ -866,12 +1160,7 @@ async function renderDashboard(user) {
 
       }
     );
-
-  /*
-   * SAVE INCIDENT
-   */
-
-  document
+    document
     .getElementById(
       "incidentForm"
     )
@@ -952,119 +1241,6 @@ async function renderDashboard(user) {
 
       }
     );
-    /*
-   * DELETE INCIDENT
-   */
-
-  document
-    .querySelectorAll(
-      ".deleteBtn"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async () => {
-
-          const confirmed =
-            confirm(
-              "Are you sure you want to permanently delete this incident?"
-            );
-
-          if (!confirmed) {
-            return;
-          }
-
-          const id =
-            button.dataset.id;
-
-          const { error } =
-            await supabase
-              .from("incidents")
-              .delete()
-              .eq(
-                "id",
-                id
-              )
-              .eq(
-                "user_id",
-                user.id
-              );
-
-          if (error) {
-
-            alert(
-              "Could not delete incident: " +
-              error.message
-            );
-
-            return;
-          }
-
-          alert(
-            "Incident deleted successfully ✅"
-          );
-
-          renderDashboard(user);
-
-        }
-      );
-
-    });
-
-
-  /*
-   * MARK RESOLVED
-   */
-
-  document
-    .querySelectorAll(
-      ".resolveBtn"
-    )
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        async () => {
-
-          const id =
-            button.dataset.id;
-
-          const { error } =
-            await supabase
-              .from("incidents")
-              .update({
-                status:
-                  "resolved",
-
-                updated_at:
-                  new Date().toISOString()
-              })
-              .eq(
-                "id",
-                id
-              )
-              .eq(
-                "user_id",
-                user.id
-              );
-
-          if (error) {
-
-            alert(
-              "Could not resolve incident: " +
-              error.message
-            );
-
-            return;
-          }
-
-          renderDashboard(user);
-
-        }
-      );
-
-    });
 
 }
 
