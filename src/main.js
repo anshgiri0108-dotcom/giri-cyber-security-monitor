@@ -1144,7 +1144,7 @@ async function renderDashboard(user) {
 
           alert(
             "AI analysis failed: 
-            " +
+" +
             error.message
           );
 
@@ -1160,7 +1160,7 @@ async function renderDashboard(user) {
 
       }
     );
-    document
+  document
     .getElementById(
       "incidentForm"
     )
