@@ -378,6 +378,54 @@ async function renderDashboard(user) {
 
       renderLogin();
     });
+  document
+  .getElementById("analyzeBtn")
+  .addEventListener("click", async () => {
+
+    const message =
+      document.getElementById("message").value.trim();
+
+    if (!message) {
+      alert("Please enter the suspicious message first.");
+      return;
+    }
+
+    const button =
+      document.getElementById("analyzeBtn");
+
+    button.textContent = "Analyzing...";
+    button.disabled = true;
+
+    try {
+
+      const response = await fetch("/api/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "AI analysis failed");
+      }
+
+      document.getElementById("assessment").value =
+        data.analysis;
+
+    } catch (error) {
+
+      alert("AI analysis failed: " + error.message);
+
+    } finally {
+
+      button.textContent = "Analyze with AI";
+      button.disabled = false;
+
+    }
+  });
 
   document
     .getElementById("incidentForm")
