@@ -77,7 +77,7 @@ const styles = `
     color: #16803c;
   }
 
-  .topbar {
+    .topbar {
     background: white;
     border-radius: 16px;
     padding: 18px 20px;
@@ -87,6 +87,37 @@ const styles = `
     align-items: center;
     gap: 15px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+  }
+
+  .security-status {
+    background: #ffffff;
+    border: 1px solid #dfe7e2;
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #20a45a;
+    flex-shrink: 0;
+  }
+
+  .status-title {
+    font-weight: 700;
+    color: #172033;
+  }
+
+  .status-text {
+    font-size: 13px;
+    color: #687386;
+    margin-top: 3px;
   }
 
   .stats {
@@ -640,6 +671,21 @@ async function renderDashboard(user) {
 
       </div>
 
+      <div class="security-status">
+
+  <div class="status-dot"></div>
+
+  <div>
+    <div class="status-title">
+      Security Monitoring Active
+    </div>
+
+    <div class="status-text">
+      Your incident monitoring dashboard is operational.
+    </div>
+  </div>
+
+</div>
       <div class="stats">
 
         <div class="stat">
