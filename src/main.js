@@ -1646,6 +1646,17 @@ async function renderDashboard(user) {
           <div class="security-note">
             This report is a guidance-based security check and does not guarantee complete account security.
           </div>
+
+          <div class="actions">
+
+            <button
+              id="downloadSecurityReport"
+              class="primary"
+            >
+              Download / Save as PDF
+            </button>
+
+        </div>
         `;
 
         const existingReport =
