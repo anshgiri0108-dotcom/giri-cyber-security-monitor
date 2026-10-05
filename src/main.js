@@ -841,13 +841,20 @@ function renderSecurityCheck(check) {
         ${overallText}
       </div>
 
-      <div class="actions">
+            <div class="actions">
 
         <button
           id="saveSecurityCheck"
           class="primary"
         >
           Save Security Check
+        </button>
+
+        <button
+          id="generateSecurityReport"
+          class="secondary"
+        >
+          Generate Security Report
         </button>
 
       </div>
