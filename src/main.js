@@ -77,7 +77,7 @@ const styles = `
     color: #16803c;
   }
 
-    .topbar {
+  .topbar {
     background: white;
     border-radius: 16px;
     padding: 18px 20px;
@@ -280,6 +280,65 @@ const styles = `
     margin-top: 0;
   }
 
+  .security-check-list {
+    margin-top: 18px;
+  }
+
+  .security-check-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid #e8ecf2;
+  }
+
+  .security-check-row:last-child {
+    border-bottom: none;
+  }
+
+  .security-check-name {
+    font-weight: 600;
+  }
+
+  .security-check-help {
+    font-size: 13px;
+    color: #687386;
+    margin-top: 4px;
+  }
+
+  .security-check-select {
+    width: 190px;
+    flex-shrink: 0;
+  }
+
+  .overall-security {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    font-weight: 700;
+  }
+
+  .overall-secure {
+    background: #eaf8ef;
+    color: #16803c;
+  }
+
+  .overall-attention {
+    background: #fff3d6;
+    color: #9a6500;
+  }
+
+  .security-note {
+    background: #f7f9fc;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 15px;
+    color: #687386;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
   @media (max-width: 850px) {
     .stats {
       grid-template-columns: repeat(2, 1fr);
@@ -287,6 +346,17 @@ const styles = `
 
     .filters {
       grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .security-check-row {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .security-check-select {
+      width: 100%;
     }
   }
 
@@ -458,6 +528,338 @@ async function loadIncidents(userId) {
   return data || [];
 }
 
+async function loadSecurityCheck(userId) {
+
+  const { data, error } =
+    await supabase
+      .from("security_checks")
+      .select("*")
+      .eq("user_id", userId)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
+      .limit(1);
+
+  if (error) {
+    console.error(error);
+    return null;
+  }
+
+  return data?.[0] || null;
+}
+
+function getSecurityDefaults() {
+
+  return {
+    two_factor: "needs_attention",
+    password_security: "needs_attention",
+    recovery_email: "needs_attention",
+    recovery_phone: "needs_attention",
+    connected_apps: "needs_attention",
+    unknown_logins: "needs_attention",
+    phishing_awareness: "needs_attention"
+  };
+}
+
+function getOverallSecurityStatus(check) {
+
+  if (!check) {
+    return "needs_attention";
+  }
+
+  const fields = [
+    "two_factor",
+    "password_security",
+    "recovery_email",
+    "recovery_phone",
+    "connected_apps",
+    "unknown_logins",
+    "phishing_awareness"
+  ];
+
+  const allSecure =
+    fields.every(
+      field =>
+        check[field] === "secure"
+    );
+
+  return allSecure
+    ? "secure"
+    : "needs_attention";
+}
+
+function renderSecurityCheck(check) {
+
+  const current =
+    check || getSecurityDefaults();
+
+  const overall =
+    getOverallSecurityStatus(current);
+
+  const overallClass =
+    overall === "secure"
+      ? "overall-secure"
+      : "overall-attention";
+
+  const overallText =
+    overall === "secure"
+      ? "Overall Security Status: Secure"
+      : "Overall Security Status: Needs Attention";
+
+  return `
+    <div class="card">
+
+      <h2>
+        🔐 Account Security Check
+      </h2>
+
+      <p class="muted">
+        Review important account-security settings. You control the account yourself; no password, OTP or recovery code is required.
+      </p>
+
+      <div class="security-check-list">
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Two-Factor Authentication (2FA)
+            </div>
+            <div class="security-check-help">
+              Check whether an additional login verification method is enabled.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="two_factor"
+          >
+            <option
+              value="needs_attention"
+              ${current.two_factor === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.two_factor === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Password Security
+            </div>
+            <div class="security-check-help">
+              Review whether the account uses a strong, unique password.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="password_security"
+          >
+            <option
+              value="needs_attention"
+              ${current.password_security === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.password_security === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Recovery Email
+            </div>
+            <div class="security-check-help">
+              Check that the recovery email is present and accessible.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="recovery_email"
+          >
+            <option
+              value="needs_attention"
+              ${current.recovery_email === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.recovery_email === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Recovery Phone
+            </div>
+            <div class="security-check-help">
+              Check that a recovery phone is available when appropriate.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="recovery_phone"
+          >
+            <option
+              value="needs_attention"
+              ${current.recovery_phone === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.recovery_phone === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Connected Apps
+            </div>
+            <div class="security-check-help">
+              Review third-party apps and remove anything unexpected.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="connected_apps"
+          >
+            <option
+              value="needs_attention"
+              ${current.connected_apps === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.connected_apps === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Unknown Logins / Devices
+            </div>
+            <div class="security-check-help">
+              Check recent login activity for devices or sessions you do not recognize.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="unknown_logins"
+          >
+            <option
+              value="needs_attention"
+              ${current.unknown_logins === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.unknown_logins === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+        <div class="security-check-row">
+          <div>
+            <div class="security-check-name">
+              Phishing Awareness
+            </div>
+            <div class="security-check-help">
+              Review common phishing warning signs and safe response steps.
+            </div>
+          </div>
+
+          <select
+            class="security-check-select"
+            data-security-field="phishing_awareness"
+          >
+            <option
+              value="needs_attention"
+              ${current.phishing_awareness === "needs_attention" ? "selected" : ""}
+            >
+              Needs Attention
+            </option>
+
+            <option
+              value="secure"
+              ${current.phishing_awareness === "secure" ? "selected" : ""}
+            >
+              Secure
+            </option>
+          </select>
+        </div>
+
+      </div>
+
+      <div
+        id="overallSecurityStatus"
+        class="overall-security ${overallClass}"
+      >
+        ${overallText}
+      </div>
+
+      <div class="actions">
+
+        <button
+          id="saveSecurityCheck"
+          class="primary"
+        >
+          Save Security Check
+        </button>
+
+      </div>
+
+      <div class="security-note">
+        Security checks are guidance based on information reviewed by the account owner. They are not a guarantee that an account is completely secure.
+      </div>
+
+    </div>
+  `;
+}
+
 function renderIncidentList(
   incidents,
   searchText,
@@ -599,9 +1001,7 @@ function renderIncidentList(
                   `
 
                   : ""
-              }
-
-              <button
+                            <button
                 class="danger deleteBtn"
                 data-id="${incident.id}"
               >
@@ -622,6 +1022,9 @@ async function renderDashboard(user) {
 
   const incidents =
     await loadIncidents(user.id);
+
+  const securityCheck =
+    await loadSecurityCheck(user.id);
 
   const openCount =
     incidents.filter(
@@ -673,23 +1076,23 @@ async function renderDashboard(user) {
 
       <div class="security-status">
 
-  <div class="status-dot"></div>
+        <div class="status-dot"></div>
 
-  <div>
-    <div class="status-title">
-      Security Monitoring Active
-    </div>
+        <div>
+          <div class="status-title">
+            Security Monitoring Active
+          </div>
 
-    <div class="status-text">
-      Your incident monitoring dashboard is operational.
-    </div>
-  </div>
+          <div class="status-text">
+            Your incident monitoring dashboard is operational.
+          </div>
+        </div>
 
-</div>
+      </div>
+
       <div class="stats">
 
         <div class="stat">
-
           <div class="muted">
             Total Incidents
           </div>
@@ -697,11 +1100,9 @@ async function renderDashboard(user) {
           <div class="stat-number">
             ${totalCount}
           </div>
-
         </div>
 
         <div class="stat">
-
           <div class="muted">
             Open Incidents
           </div>
@@ -709,11 +1110,9 @@ async function renderDashboard(user) {
           <div class="stat-number">
             ${openCount}
           </div>
-
         </div>
 
         <div class="stat">
-
           <div class="muted">
             Resolved
           </div>
@@ -721,11 +1120,9 @@ async function renderDashboard(user) {
           <div class="stat-number">
             ${resolvedCount}
           </div>
-
         </div>
 
         <div class="stat">
-
           <div class="muted">
             High Risk
           </div>
@@ -733,10 +1130,11 @@ async function renderDashboard(user) {
           <div class="stat-number">
             ${highCount}
           </div>
-
         </div>
 
       </div>
+
+      ${renderSecurityCheck(securityCheck)}
 
       <div class="card">
 
@@ -926,6 +1324,160 @@ async function renderDashboard(user) {
       }
     );
 
+  document
+    .querySelectorAll(
+      ".security-check-select"
+    )
+    .forEach(select => {
+
+      select.addEventListener(
+        "change",
+        () => {
+
+          const values = {};
+
+          document
+            .querySelectorAll(
+              ".security-check-select"
+            )
+            .forEach(item => {
+
+              values[
+                item.dataset.securityField
+              ] = item.value;
+
+            });
+
+          const overall =
+            getOverallSecurityStatus(
+              values
+            );
+
+          const overallElement =
+            document.getElementById(
+              "overallSecurityStatus"
+            );
+
+          if (!overallElement) {
+            return;
+          }
+
+          if (overall === "secure") {
+
+            overallElement.className =
+              "overall-security overall-secure";
+
+            overallElement.textContent =
+              "Overall Security Status: Secure";
+
+          } else {
+
+            overallElement.className =
+              "overall-security overall-attention";
+
+            overallElement.textContent =
+              "Overall Security Status: Needs Attention";
+
+          }
+
+        }
+      );
+
+    });
+
+  document
+    .getElementById(
+      "saveSecurityCheck"
+    )
+    .addEventListener(
+      "click",
+      async () => {
+
+        const values = {};
+
+        document
+          .querySelectorAll(
+            ".security-check-select"
+          )
+          .forEach(select => {
+
+            values[
+              select.dataset.securityField
+            ] = select.value;
+
+          });
+
+        const overall =
+          getOverallSecurityStatus(
+            values
+          );
+
+        const existing =
+          await loadSecurityCheck(
+            user.id
+          );
+
+        let error;
+
+        if (existing) {
+
+          const result =
+            await supabase
+              .from("security_checks")
+              .update({
+                ...values,
+                overall_status:
+                  overall,
+                updated_at:
+                  new Date().toISOString()
+              })
+              .eq(
+                "id",
+                existing.id
+              )
+              .eq(
+                "user_id",
+                user.id
+              );
+
+          error = result.error;
+
+        } else {
+
+          const result =
+            await supabase
+              .from("security_checks")
+              .insert({
+                user_id:
+                  user.id,
+                ...values,
+                overall_status:
+                  overall
+              });
+
+          error = result.error;
+
+        }
+
+        if (error) {
+
+          alert(
+            "Could not save security check: " +
+            error.message
+          );
+
+          return;
+        }
+
+        alert(
+          "Security check saved successfully ✅"
+        );
+
+        await renderDashboard(user);
+
+      }
+    );
+
   const searchInput =
     document.getElementById(
       "searchInput"
@@ -1052,7 +1604,6 @@ async function renderDashboard(user) {
                 .update({
                   status:
                     "resolved",
-
                   updated_at:
                     new Date().toISOString()
                 })
@@ -1172,7 +1723,6 @@ async function renderDashboard(user) {
               riskMatch[1]
                 .charAt(0)
                 .toUpperCase() +
-
               riskMatch[1]
                 .slice(1)
                 .toLowerCase();
@@ -1182,18 +1732,18 @@ async function renderDashboard(user) {
                 "risk"
               )
               .value =
-              aiRisk;
+                aiRisk;
 
           }
 
         } catch (error) {
 
-  alert(
-    "AI analysis failed: " +
-    error.message
-  );
+          alert(
+            "AI analysis failed: " +
+            error.message
+          );
 
-} finally {
+        } finally {
 
           button.textContent =
             "Analyze with AI";
@@ -1205,6 +1755,7 @@ async function renderDashboard(user) {
 
       }
     );
+
   document
     .getElementById(
       "incidentForm"
@@ -1241,7 +1792,16 @@ async function renderDashboard(user) {
         if (!title || !message) {
 
           alert(
-            "Please fill in the title and message."
+            "Please enter the incident title and message."
+          );
+
+          return;
+        }
+
+        if (!assessment) {
+
+          alert(
+            "Please analyze the incident with AI before saving."
           );
 
           return;
@@ -1251,21 +1811,14 @@ async function renderDashboard(user) {
           await supabase
             .from("incidents")
             .insert({
-
               user_id:
                 user.id,
-
               title,
-
               message,
-
               risk,
-
               assessment,
-
               status:
                 "open"
-
             });
 
         if (error) {
@@ -1288,7 +1841,6 @@ async function renderDashboard(user) {
     );
 
 }
-
 
 async function startApp() {
 
@@ -1330,6 +1882,5 @@ async function startApp() {
   );
 
 }
-
 
 startApp();
