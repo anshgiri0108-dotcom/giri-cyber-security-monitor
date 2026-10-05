@@ -1001,6 +1001,7 @@ function renderIncidentList(
                   `
 
                   : ""
+              }
                             <button
                 class="danger deleteBtn"
                 data-id="${incident.id}"
