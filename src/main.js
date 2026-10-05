@@ -1486,6 +1486,196 @@ async function renderDashboard(user) {
       }
     );
 
+  document
+    .getElementById(
+      "generateSecurityReport"
+    )
+    .addEventListener(
+      "click",
+      () => {
+
+        const values = {};
+
+        document
+          .querySelectorAll(
+            ".security-check-select"
+          )
+          .forEach(select => {
+
+            values[
+              select.dataset.securityField
+            ] = select.value;
+
+          });
+
+        const overall =
+          getOverallSecurityStatus(
+            values
+          );
+
+        const checkItems = [
+          {
+            key: "two_factor",
+            name: "Two-Factor Authentication (2FA)"
+          },
+          {
+            key: "password_security",
+            name: "Password Security"
+          },
+          {
+            key: "recovery_email",
+            name: "Recovery Email"
+          },
+          {
+            key: "recovery_phone",
+            name: "Recovery Phone"
+          },
+          {
+            key: "connected_apps",
+            name: "Connected Apps"
+          },
+          {
+            key: "unknown_logins",
+            name: "Unknown Logins / Devices"
+          },
+          {
+            key: "phishing_awareness",
+            name: "Phishing Awareness"
+          }
+        ];
+
+        const attentionItems =
+          checkItems.filter(
+            item =>
+              values[item.key] !==
+              "secure"
+          );
+
+        const report =
+          document.createElement(
+            "div"
+          );
+
+        report.className =
+          "security-report";
+
+        report.innerHTML = `
+          <div class="report-header">
+            Security Check Report
+          </div>
+
+          <div class="report-section">
+            <div class="report-title">
+              Overall Security Status
+            </div>
+
+            <div class="report-content">
+              ${
+                overall === "secure"
+                  ? "🟢 Secure"
+                  : "🟠 Needs Attention"
+              }
+            </div>
+          </div>
+
+          <div class="report-section">
+            <div class="report-title">
+              Security Checks
+            </div>
+
+            <div class="report-content">
+
+              ${checkItems
+                .map(
+                  item => `
+                    <div style="margin-bottom:10px;">
+                      <strong>
+                        ${item.name}
+                      </strong>
+                      —
+                      ${
+                        values[item.key] ===
+                        "secure"
+                          ? "🟢 Secure"
+                          : "🟠 Needs Attention"
+                      }
+                    </div>
+                  `
+                )
+                .join("")}
+
+            </div>
+          </div>
+
+          ${
+            attentionItems.length > 0
+              ? `
+                <div class="report-section">
+                  <div class="report-title">
+                    Recommended Attention Areas
+                  </div>
+
+                  <div class="report-content">
+
+                    ${attentionItems
+                      .map(
+                        item => `
+                          <div style="margin-bottom:8px;">
+                            • Review ${item.name}
+                          </div>
+                        `
+                      )
+                      .join("")}
+
+                  </div>
+                </div>
+              `
+              : `
+                <div class="report-section">
+                  <div class="report-title">
+                    Recommended Actions
+                  </div>
+
+                  <div class="report-content">
+                    Continue monitoring account-security settings regularly.
+                  </div>
+                </div>
+              `
+          }
+
+          <div class="security-note">
+            This report is a guidance-based security check and does not guarantee complete account security.
+          </div>
+        `;
+
+        const existingReport =
+          document.querySelector(
+            ".security-report"
+          );
+
+        if (existingReport) {
+          existingReport.remove();
+        }
+
+        const securityCard =
+          document
+            .getElementById(
+              "generateSecurityReport"
+            )
+            .closest(".card");
+
+        securityCard.appendChild(
+          report
+        );
+
+        report.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+      }
+    );
+  
   const searchInput =
     document.getElementById(
       "searchInput"
