@@ -1668,6 +1668,17 @@ async function renderDashboard(user) {
           existingReport.remove();
         }
 
+                document
+          .getElementById(
+            "downloadSecurityReport"
+          )
+          .addEventListener(
+            "click",
+            () => {
+              window.print();
+            }
+          );
+
         const securityCard =
           document
             .getElementById(
