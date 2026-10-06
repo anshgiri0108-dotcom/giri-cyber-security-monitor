@@ -826,6 +826,7 @@ function renderSecurityCheck(check) {
             <option
               value="secure"
               ${current.phishing_awareness === "secure" ? "selected" : ""}
+             >
               Secure
             </option>
           </select>
