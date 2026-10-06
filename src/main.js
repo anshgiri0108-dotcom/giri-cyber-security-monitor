@@ -1601,7 +1601,6 @@ function renderIncidentList(
                   `
                 )
                 .join("")}
-
             </div>
           </div>
 
