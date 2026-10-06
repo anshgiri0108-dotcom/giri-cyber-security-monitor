@@ -364,6 +364,42 @@ const styles = `
     .stats {
       grid-template-columns: 1fr;
     }
+     @media print {
+  @page {
+    size: A4;
+    margin: 15mm;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .security-report,
+  .security-report * {
+    visibility: visible !important;
+  }
+
+  .security-report {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+  }
+
+  .security-report .actions {
+    display: none !important;
+  }
+}
 
     .topbar {
       flex-direction: column;
