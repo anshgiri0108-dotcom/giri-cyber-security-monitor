@@ -1655,7 +1655,7 @@ function renderIncidentList(
         </div>
         `;
 
-        const existingReport =
+                const existingReport =
           document.querySelector(
             ".security-report"
           );
@@ -1675,16 +1675,6 @@ function renderIncidentList(
           report
         );
 
-        report.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-
-      }
-    );
-
-      
-
         document
           .getElementById(
             "downloadSecurityReport"
@@ -1696,9 +1686,13 @@ function renderIncidentList(
             }
           );
 
+        report.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
       }
     );
-
 
   const searchInput =
     document.getElementById(
