@@ -1677,15 +1677,15 @@ function renderIncidentList(
         );
 
         document
-          .getElementById(
-            "downloadSecurityReport"
-          )
-          .addEventListener(
-            "click",
-            () => {
-              window.print();
-            }
-          );
+  .getElementById(
+    "downloadSecurityReport"
+  )
+  .addEventListener(
+    "click",
+    () => {
+      window.print();
+    }
+  );
 
         report.scrollIntoView({
           behavior: "smooth",
