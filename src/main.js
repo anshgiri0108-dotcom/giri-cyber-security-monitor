@@ -1623,9 +1623,8 @@ function renderIncidentList(
                         `
                       )
                       .join("")}
-
                   </div>
-                </div>
+                  </div>
               `
               : `
                 <div class="report-section">
