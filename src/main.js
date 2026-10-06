@@ -826,7 +826,6 @@ function renderSecurityCheck(check) {
             <option
               value="secure"
               ${current.phishing_awareness === "secure" ? "selected" : ""}
-            >
               Secure
             </option>
           </select>
@@ -841,7 +840,7 @@ function renderSecurityCheck(check) {
         ${overallText}
       </div>
 
-            <div class="actions">
+      <div class="actions">
 
         <button
           id="saveSecurityCheck"
@@ -997,19 +996,18 @@ function renderIncidentList(
               ${
                 incident.status ===
                 "open"
-
                   ? `
                     <button
                       class="success resolveBtn"
                       data-id="${incident.id}"
-                    >
+                                         >
                       Mark Resolved
                     </button>
                   `
-
                   : ""
               }
-                            <button
+
+              <button
                 class="danger deleteBtn"
                 data-id="${incident.id}"
               >
@@ -1026,7 +1024,7 @@ function renderIncidentList(
     .join("");
 }
 
-async function renderDashboard(user) {
+ async function renderDashboard(user) {
 
   const incidents =
     await loadIncidents(user.id);
@@ -1486,7 +1484,7 @@ async function renderDashboard(user) {
       }
     );
 
-  document
+        document
     .getElementById(
       "generateSecurityReport"
     )
@@ -1668,17 +1666,6 @@ async function renderDashboard(user) {
           existingReport.remove();
         }
 
-                document
-          .getElementById(
-            "downloadSecurityReport"
-          )
-          .addEventListener(
-            "click",
-            () => {
-              window.print();
-            }
-          );
-
         const securityCard =
           document
             .getElementById(
@@ -1697,7 +1684,24 @@ async function renderDashboard(user) {
 
       }
     );
-  
+
+      
+
+        document
+          .getElementById(
+            "downloadSecurityReport"
+          )
+          .addEventListener(
+            "click",
+            () => {
+              window.print();
+            }
+          );
+
+      }
+    );
+
+
   const searchInput =
     document.getElementById(
       "searchInput"
@@ -1856,7 +1860,6 @@ async function renderDashboard(user) {
   }
 
   attachIncidentButtons();
-
   document
     .getElementById("analyzeBtn")
     .addEventListener(
@@ -1975,6 +1978,7 @@ async function renderDashboard(user) {
 
       }
     );
+
 
   document
     .getElementById(
