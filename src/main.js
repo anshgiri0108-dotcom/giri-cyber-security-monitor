@@ -1208,6 +1208,25 @@ function renderIncidentList(
           ></textarea>
 
           <label>
+  Attachment / Link
+</label>
+
+<input
+  id="incidentAttachment"
+  type="file"
+/>
+
+<input
+  id="incidentLink"
+  type="url"
+  placeholder="Paste suspicious link (optional)"
+/>
+
+<div class="muted" style="margin-bottom:12px;">
+  You can attach a file or add a suspicious link for review.
+</div>
+
+          <label>
             Risk level
           </label>
 
